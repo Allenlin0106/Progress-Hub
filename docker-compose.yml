@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: progress-hub-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: progress
+      POSTGRES_PASSWORD: progress
+      POSTGRES_DB: progress_hub
+    ports:
+      - "5432:5432"
+    volumes:
+      - progress_hub_pgdata:/var/lib/postgresql/data
+
+volumes:
+  progress_hub_pgdata:

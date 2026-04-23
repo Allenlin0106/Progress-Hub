@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
+  name          String
+  passwordHash  String
+  createdAt     DateTime      @default(now())
+  ownedProjects Project[]     @relation("ProjectOwner")
+  memberships   Member[]
+  assignedWork  WorkPackage[] @relation("Assignee")
+}
+
+model Project {
+  id           Int           @id @default(autoincrement())
+  name         String
+  description  String?
+  ownerId      Int
+  owner        User          @relation("ProjectOwner", fields: [ownerId], references: [id])
+  members      Member[]
+  workPackages WorkPackage[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Member {
+  id        Int     @id @default(autoincrement())
+  projectId Int
+  userId    Int
+  role      Role    @default(MEMBER)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+}
+
+model WorkPackage {
+  id          Int       @id @default(autoincrement())
+  projectId   Int
+  title       String
+  description String?
+  status      Status    @default(NEW)
+  priority    Priority  @default(NORMAL)
+  assigneeId  Int?
+  dueDate     DateTime?
+  position    Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee    User?     @relation("Assignee", fields: [assigneeId], references: [id])
+}
+
+enum Role {
+  OWNER
+  MEMBER
+}
+
+enum Status {
+  NEW
+  IN_PROGRESS
+  DONE
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+}
