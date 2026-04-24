@@ -1,6 +1,5 @@
 @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> SignInManager
 @inject Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> UserManager
-@inject ProgressHub.Web.Services.LdapAuthenticator Ldap
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,10 +24,7 @@
             else
             {
                 <a asp-page="/Account/Login">Sign in</a>
-                @if (!Ldap.IsEnabled)
-                {
-                    <a asp-page="/Account/Register">Register</a>
-                }
+                <a asp-page="/Account/Register">Register</a>
             }
         </nav>
     </header>

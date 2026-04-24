@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProgressHub.Web.Data;
 using ProgressHub.Web.Models;
-using ProgressHub.Web.Services;
 
 namespace ProgressHub.Web
 {
@@ -42,9 +41,6 @@ namespace ProgressHub.Web
                 options.LogoutPath = "/Account/Logout";
                 options.AccessDeniedPath = "/Account/Login";
             });
-
-            services.Configure<LdapOptions>(Configuration.GetSection("Ldap"));
-            services.AddSingleton<LdapAuthenticator>();
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)

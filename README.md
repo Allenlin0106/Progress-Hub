@@ -7,7 +7,7 @@ Built as an **ASP.NET Core 2.1 Razor Pages** application that opens cleanly in *
 ## Stack
 
 - **Web**: ASP.NET Core 2.1 + Razor Pages
-- **Auth**: ASP.NET Core Identity 2.1 (cookie-based) — with optional **LDAP / Active Directory** sign-in (Novell.Directory.Ldap.NETStandard)
+- **Auth**: ASP.NET Core Identity 2.1 (cookie-based)
 - **Data**: Entity Framework Core 2.1 + **SQL Server** (LocalDB by default)
 - **Client**: hand-rolled CSS + [SortableJS](https://github.com/SortableJS/Sortable) + [Frappe Gantt](https://frappe.io/gantt) (CDN)
 
@@ -77,7 +77,6 @@ Progress-Hub/
     └── ProgressHub.Web/
         ├── Data/             # ApplicationDbContext, SeedData, ProjectAccess helpers
         ├── Models/           # ApplicationUser, Project, ProjectMember, WorkPackage, enums
-        ├── Services/         # LdapOptions, LdapAuthenticator (optional AD sign-in)
         ├── Pages/
         │   ├── Account/      # Login, Register, Logout
         │   ├── Projects/     # Index, Create, Edit, Delete, Board (Kanban), Gantt, Members
@@ -93,37 +92,6 @@ Progress-Hub/
         ├── appsettings.json
         └── ProgressHub.Web.csproj
 ```
-
-## LDAP / Active Directory sign-in
-
-LDAP is **disabled by default**. When enabled the local Identity password flow is bypassed, the `Register` page is locked, and the demo seed account can no longer sign in.
-
-To turn it on, fill in the `Ldap` section of `appsettings.json` (or use user-secrets / env vars):
-
-```json
-"Ldap": {
-  "Enabled": true,
-  "Server": "ldap.example.com",
-  "Port": 389,
-  "UseSsl": false,
-  "BaseDn": "DC=example,DC=com",
-  "SearchFilter": "(|(sAMAccountName={0})(mail={0})(uid={0}))",
-  "SearchUserDn": "CN=svc-readonly,DC=example,DC=com",
-  "SearchUserPassword": "***",
-  "UsernameAttribute": "sAMAccountName",
-  "EmailAttribute": "mail",
-  "DisplayNameAttribute": "displayName"
-}
-```
-
-Flow:
-
-1. User submits username/email + password to `/Account/Login`.
-2. The server opens an LDAP connection to `Server:Port` (optionally `UseSsl`), binds as `SearchUserDn` (or anonymously if empty), and runs `SearchFilter` under `BaseDn` to locate the user's DN. Leaving `UserDnPattern` (e.g. `"uid={0},ou=users,dc=example,dc=com"`) set skips the search and binds directly.
-3. A second connection rebinds as the user with their password. If that bind succeeds, the caller is considered authenticated.
-4. The app finds or **auto-provisions** a matching `ApplicationUser` (so projects / work packages can still reference them) and issues the normal ASP.NET Core Identity cookie. No LDAP password is ever stored.
-
-Secrets: keep `SearchUserPassword` out of `appsettings.json` in real deployments — use `dotnet user-secrets` in development or environment variables in production (`Ldap__SearchUserPassword=...`).
 
 ## Authorization rules
 

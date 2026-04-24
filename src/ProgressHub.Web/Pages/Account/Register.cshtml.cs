@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ProgressHub.Web.Models;
-using ProgressHub.Web.Services;
 
 namespace ProgressHub.Web.Pages.Account
 {
@@ -14,22 +13,15 @@ namespace ProgressHub.Web.Pages.Account
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly LdapAuthenticator _ldap;
 
-        public RegisterModel(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            LdapAuthenticator ldap)
+        public RegisterModel(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _ldap = ldap;
         }
 
         [BindProperty]
         public InputModel Input { get; set; }
-
-        public bool IsLdapEnabled => _ldap.IsEnabled;
 
         public class InputModel
         {
@@ -44,14 +36,10 @@ namespace ProgressHub.Web.Pages.Account
             public string Password { get; set; }
         }
 
-        public IActionResult OnGet() => Page();
+        public void OnGet() { }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (_ldap.IsEnabled)
-            {
-                return RedirectToPage("/Account/Login");
-            }
             if (!ModelState.IsValid) return Page();
 
             var user = new ApplicationUser

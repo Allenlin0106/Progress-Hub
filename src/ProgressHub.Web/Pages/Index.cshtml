@@ -1,6 +1,5 @@
 @page
 @model IndexModel
-@inject ProgressHub.Web.Services.LdapAuthenticator Ldap
 @{
     ViewData["Title"] = "Home";
 }
@@ -16,18 +15,8 @@
     {
         <div class="button-row">
             <a class="btn btn-primary" asp-page="/Account/Login">Sign in</a>
-            @if (!Ldap.IsEnabled)
-            {
-                <a class="btn" asp-page="/Account/Register">Register</a>
-            }
+            <a class="btn" asp-page="/Account/Register">Register</a>
         </div>
-        @if (Ldap.IsEnabled)
-        {
-            <p class="muted">Sign in with your organisation's directory account.</p>
-        }
-        else
-        {
-            <p class="muted">Demo account: <strong>demo@@example.com</strong> / <strong>demo1234</strong></p>
-        }
+        <p class="muted">Demo account: <strong>demo@@example.com</strong> / <strong>demo1234</strong></p>
     }
 </section>

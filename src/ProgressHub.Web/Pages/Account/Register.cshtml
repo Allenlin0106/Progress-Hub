@@ -5,39 +5,25 @@
 }
 
 <div class="auth-page">
-    @if (Model.IsLdapEnabled)
-    {
-        <div class="card auth-card">
-            <h1>Registration disabled</h1>
-            <p class="muted">
-                This instance uses your organisation's directory (LDAP) for sign-in.
-                New accounts cannot be created here — ask your directory administrator.
-            </p>
-            <a class="btn btn-primary full" asp-page="/Account/Login">Back to sign in</a>
-        </div>
-    }
-    else
-    {
-        <form method="post" class="card auth-card">
-            <h1>Create account</h1>
-            <div asp-validation-summary="All" class="error"></div>
+    <form method="post" class="card auth-card">
+        <h1>Create account</h1>
+        <div asp-validation-summary="All" class="error"></div>
 
-            <label asp-for="Input.DisplayName"></label>
-            <input asp-for="Input.DisplayName" />
-            <span asp-validation-for="Input.DisplayName" class="error"></span>
+        <label asp-for="Input.DisplayName"></label>
+        <input asp-for="Input.DisplayName" />
+        <span asp-validation-for="Input.DisplayName" class="error"></span>
 
-            <label asp-for="Input.Email"></label>
-            <input asp-for="Input.Email" autocomplete="email" />
-            <span asp-validation-for="Input.Email" class="error"></span>
+        <label asp-for="Input.Email"></label>
+        <input asp-for="Input.Email" autocomplete="email" />
+        <span asp-validation-for="Input.Email" class="error"></span>
 
-            <label asp-for="Input.Password"></label>
-            <input asp-for="Input.Password" type="password" autocomplete="new-password" />
-            <span asp-validation-for="Input.Password" class="error"></span>
+        <label asp-for="Input.Password"></label>
+        <input asp-for="Input.Password" type="password" autocomplete="new-password" />
+        <span asp-validation-for="Input.Password" class="error"></span>
 
-            <button type="submit" class="btn btn-primary full">Create account</button>
-            <p class="muted center">Already have one? <a asp-page="/Account/Login">Sign in</a></p>
-        </form>
-    }
+        <button type="submit" class="btn btn-primary full">Create account</button>
+        <p class="muted center">Already have one? <a asp-page="/Account/Login">Sign in</a></p>
+    </form>
 </div>
 
 @section Scripts {
