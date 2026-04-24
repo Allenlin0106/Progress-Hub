@@ -1,0 +1,27 @@
+@page
+@model ProgressHub.Web.Pages.Projects.CreateModel
+@{
+    ViewData["Title"] = "New project";
+}
+
+<h2>New project</h2>
+
+<form method="post" class="card" style="max-width:540px">
+    <div asp-validation-summary="All" class="error"></div>
+    <label asp-for="Input.Name"></label>
+    <input asp-for="Input.Name" />
+    <span asp-validation-for="Input.Name" class="error"></span>
+
+    <label asp-for="Input.Description"></label>
+    <textarea asp-for="Input.Description" rows="4"></textarea>
+    <span asp-validation-for="Input.Description" class="error"></span>
+
+    <div class="button-row" style="margin-top:16px">
+        <a class="btn" asp-page="./Index">Cancel</a>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

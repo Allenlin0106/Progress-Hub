@@ -1,0 +1,64 @@
+@page "{id:int}"
+@model ProgressHub.Web.Pages.Projects.MembersModel
+@{
+    ViewData["Title"] = Model.Project.Name + " · Members";
+}
+
+<div class="toolbar">
+    <div>
+        <h2 style="margin-bottom:4px">@Model.Project.Name</h2>
+        <div class="muted">Members</div>
+    </div>
+    <a class="btn" asp-page="./Board" asp-route-id="@Model.Project.Id">Back to board</a>
+</div>
+
+<div class="tabs">
+    <a asp-page="./Board" asp-route-id="@Model.Project.Id">Kanban</a>
+    <a class="active">Members</a>
+</div>
+
+@if (Model.IsOwner)
+{
+    <form method="post" asp-page-handler="Add" class="card row" style="align-items:end;margin-bottom:16px">
+        <input type="hidden" name="id" value="@Model.Project.Id" />
+        <div style="flex:1">
+            <label asp-for="Input.Email">Email to invite</label>
+            <input asp-for="Input.Email" placeholder="user@example.com" />
+            <span asp-validation-for="Input.Email" class="error"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Add member</button>
+    </form>
+}
+
+<div class="card">
+    <table class="wp-list">
+        <thead>
+            <tr><th>Name</th><th>Email</th><th>Role</th><th></th></tr>
+        </thead>
+        <tbody>
+        @foreach (var m in Model.Members)
+        {
+            <tr>
+                <td><strong>@m.User.DisplayName</strong></td>
+                <td>@m.User.Email</td>
+                <td><span class="badge @m.Role.ToString()">@m.Role</span></td>
+                <td style="text-align:right">
+                    @if (Model.IsOwner && m.Role != ProjectRole.Owner)
+                    {
+                        <form method="post" asp-page-handler="Remove" class="inline-form"
+                              onsubmit="return confirm('Remove @m.User.DisplayName from this project?');">
+                            <input type="hidden" name="id" value="@Model.Project.Id" />
+                            <input type="hidden" name="userId" value="@m.UserId" />
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

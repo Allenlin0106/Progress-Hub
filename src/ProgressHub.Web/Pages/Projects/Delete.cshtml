@@ -1,0 +1,18 @@
+@page "{id:int}"
+@model ProgressHub.Web.Pages.Projects.DeleteModel
+@{
+    ViewData["Title"] = "Delete project";
+}
+
+<h2>Delete project</h2>
+
+<div class="card" style="max-width:540px">
+    <p>Are you sure you want to delete <strong>@Model.Project.Name</strong>? This also removes all of its work packages and membership records.</p>
+    <form method="post">
+        <input type="hidden" asp-for="Id" />
+        <div class="button-row">
+            <a class="btn" asp-page="./Board" asp-route-id="@Model.Id">Cancel</a>
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+    </form>
+</div>

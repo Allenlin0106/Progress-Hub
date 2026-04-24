@@ -1,0 +1,54 @@
+@page "{id:int}"
+@model ProgressHub.Web.Pages.Projects.BoardModel
+@{
+    ViewData["Title"] = Model.Project.Name;
+}
+
+<div class="toolbar">
+    <div>
+        <h2 style="margin-bottom:4px">@Model.Project.Name</h2>
+        <div class="muted">@(string.IsNullOrEmpty(Model.Project.Description) ? "No description" : Model.Project.Description)</div>
+    </div>
+    <div class="button-row">
+        <a class="btn" asp-page="./Members" asp-route-id="@Model.Project.Id">Members</a>
+        <a class="btn" asp-page="./WorkPackages/Create" asp-route-projectId="@Model.Project.Id">New work package</a>
+        @if (Model.IsOwner)
+        {
+            <a class="btn" asp-page="./Edit" asp-route-id="@Model.Project.Id">Edit</a>
+        }
+    </div>
+</div>
+
+<div class="tabs">
+    <a class="active">Kanban</a>
+    <a asp-page="./Members" asp-route-id="@Model.Project.Id">Members</a>
+</div>
+
+<div class="kanban" data-move-url="@Url.Page("./Board", "Move", new { id = Model.Project.Id })" data-token="@Model.AntiForgeryToken">
+    @foreach (var column in Model.Columns)
+    {
+        <div class="kanban-column" data-status="@column.StatusKey">
+            <h4>@column.Label · @column.Items.Count</h4>
+            <div class="kanban-list" data-status="@column.StatusKey">
+                @foreach (var wp in column.Items)
+                {
+                    <div class="kanban-card" data-id="@wp.Id">
+                        <div class="title"><a asp-page="./WorkPackages/Edit" asp-route-id="@wp.Id">@wp.Title</a></div>
+                        <div class="meta">
+                            <span class="priority @wp.Priority.ToString()">@wp.Priority</span>
+                            <span>
+                                @(wp.Assignee != null ? wp.Assignee.DisplayName : "Unassigned")
+                                @(wp.DueDate.HasValue ? " · due " + wp.DueDate.Value.ToString("yyyy-MM-dd") : "")
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <script src="~/js/kanban.js"></script>
+}

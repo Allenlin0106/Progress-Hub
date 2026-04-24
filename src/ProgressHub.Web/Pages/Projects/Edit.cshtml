@@ -1,0 +1,30 @@
+@page "{id:int}"
+@model ProgressHub.Web.Pages.Projects.EditModel
+@{
+    ViewData["Title"] = "Edit project";
+}
+
+<h2>Edit project</h2>
+
+<form method="post" class="card" style="max-width:540px">
+    <div asp-validation-summary="All" class="error"></div>
+    <input type="hidden" asp-for="Input.Id" />
+
+    <label asp-for="Input.Name"></label>
+    <input asp-for="Input.Name" />
+    <span asp-validation-for="Input.Name" class="error"></span>
+
+    <label asp-for="Input.Description"></label>
+    <textarea asp-for="Input.Description" rows="4"></textarea>
+    <span asp-validation-for="Input.Description" class="error"></span>
+
+    <div class="button-row" style="margin-top:16px">
+        <a class="btn" asp-page="./Board" asp-route-id="@Model.Input.Id">Cancel</a>
+        <a class="btn btn-danger" asp-page="./Delete" asp-route-id="@Model.Input.Id">Delete</a>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

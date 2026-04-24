@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <UserSecretsId>progress-hub-web</UserSecretsId>
+    <RootNamespace>ProgressHub.Web</RootNamespace>
+    <AssemblyName>ProgressHub.Web</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.6" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.6" PrivateAssets="All" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
+  </ItemGroup>
+
+</Project>
