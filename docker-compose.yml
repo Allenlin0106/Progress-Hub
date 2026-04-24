@@ -1,16 +1,16 @@
 services:
   db:
-    image: postgres:16-alpine
+    image: mcr.microsoft.com/mssql/server:2019-latest
     container_name: progress-hub-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: progress
-      POSTGRES_PASSWORD: progress
-      POSTGRES_DB: progress_hub
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Progress!Hub1"
+      MSSQL_PID: "Express"
     ports:
-      - "5432:5432"
+      - "1433:1433"
     volumes:
-      - progress_hub_pgdata:/var/lib/postgresql/data
+      - progress_hub_mssql:/var/opt/mssql
 
 volumes:
-  progress_hub_pgdata:
+  progress_hub_mssql:

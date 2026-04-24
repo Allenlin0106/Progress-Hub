@@ -8,8 +8,8 @@ Built as an **ASP.NET Core 2.2 Razor Pages** application so it opens cleanly in 
 
 - **Web**: ASP.NET Core 2.2 + Razor Pages
 - **Auth**: ASP.NET Core Identity (cookie-based)
-- **Data**: Entity Framework Core 2.2 + Npgsql (PostgreSQL)
-- **Client**: Bootstrap-free hand-rolled CSS + [SortableJS](https://github.com/SortableJS/Sortable) (CDN) for Kanban drag-and-drop
+- **Data**: Entity Framework Core 2.2 + **SQL Server** (LocalDB by default)
+- **Client**: hand-rolled CSS + [SortableJS](https://github.com/SortableJS/Sortable) (CDN) for Kanban drag-and-drop
 
 ## Features
 
@@ -24,24 +24,22 @@ Built as an **ASP.NET Core 2.2 Razor Pages** application so it opens cleanly in 
 
 - Visual Studio 2017 (15.9.x) with the **ASP.NET and web development** workload
 - **.NET Core 2.2 SDK** ([download](https://dotnet.microsoft.com/download/dotnet/2.2))
-- PostgreSQL 12+ (Docker Desktop recommended)
+- **SQL Server LocalDB** (comes with the VS 2017 ASP.NET workload — nothing extra to install)
 
 ## Running with Visual Studio 2017
 
-1. Start PostgreSQL:
+1. Open `ProgressHub.sln` in Visual Studio 2017.
+2. (Optional) Confirm the connection string in `src/ProgressHub.Web/appsettings.json`:
 
    ```
-   docker compose up -d
+   Server=(localdb)\mssqllocaldb;Database=ProgressHub;Trusted_Connection=True;MultipleActiveResultSets=true
    ```
 
-   (or install Postgres locally and create database `progress_hub` with user `progress` / password `progress`)
-
-2. Open `ProgressHub.sln` in Visual Studio 2017.
-3. Confirm the connection string in `src/ProgressHub.Web/appsettings.json` matches your Postgres instance.
-4. Press **F5** to run. On first launch the app will:
-   - create the database schema (`EnsureCreated`)
+3. Press **F5** to run. On first launch the app will:
+   - create the `ProgressHub` database in LocalDB (`EnsureCreated`)
    - seed the demo user and sample project
-5. Sign in with the demo account:
+
+4. Sign in with the demo account:
    - Email: `demo@example.com`
    - Password: `demo1234`
 
@@ -54,12 +52,26 @@ dotnet run
 
 App listens on `https://localhost:5001` / `http://localhost:5000` by default.
 
+### Using SQL Server in Docker instead of LocalDB
+
+If you are on macOS/Linux or prefer not to use LocalDB, start SQL Server via the provided compose file:
+
+```
+docker compose up -d
+```
+
+Then update the connection string in `appsettings.json`:
+
+```
+Server=localhost,1433;Database=ProgressHub;User Id=sa;Password=Progress!Hub1;TrustServerCertificate=True
+```
+
 ## Project layout
 
 ```
 Progress-Hub/
 ├── ProgressHub.sln
-├── docker-compose.yml
+├── docker-compose.yml      # optional: SQL Server 2019 Express (for non-Windows)
 └── src/
     └── ProgressHub.Web/
         ├── Data/             # ApplicationDbContext, SeedData, ProjectAccess helpers
@@ -89,6 +101,16 @@ Progress-Hub/
 | Add or remove members                     | Project owner only  |
 
 ## Reset the database
+
+**LocalDB:** delete the database via SQL Server Object Explorer in VS, or run:
+
+```
+sqllocaldb stop MSSQLLocalDB
+sqllocaldb delete MSSQLLocalDB
+sqllocaldb create MSSQLLocalDB
+```
+
+**Docker:**
 
 ```
 docker compose down -v
