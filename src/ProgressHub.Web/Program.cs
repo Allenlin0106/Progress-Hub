@@ -1,38 +1,80 @@
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using ProgressHub.Web.Data;
+using ProgressHub.Web.Models;
+using System.Text.Json.Serialization;
 
-namespace ProgressHub.Web
-{
-    public class Program
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services
+    .AddDefaultIdentity<ApplicationUser>(options =>
     {
-        public static void Main(string[] args)
-        {
-            var host = CreateWebHostBuilder(args).Build();
+        options.Password.RequiredLength = 6;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireDigit = false;
+        options.SignIn.RequireConfirmedAccount = false;
+    })
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                try
-                {
-                    var db = services.GetRequiredService<ApplicationDbContext>();
-                    db.Database.EnsureCreated();
-                    SeedData.EnsureSeededAsync(services).GetAwaiter().GetResult();
-                }
-                catch (System.Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "Database migration or seeding failed.");
-                }
-            }
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/Login";
+});
 
-            host.Run();
-        }
+builder.Services
+    .AddRazorPages(options =>
+    {
+        options.Conventions.AuthorizeFolder("/Projects");
+        options.Conventions.AllowAnonymousToPage("/Index");
+        options.Conventions.AllowAnonymousToFolder("/Account");
+    })
+    .AddJsonOptions(json =>
+    {
+        json.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseMigrationsEndPoint();
+}
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapRazorPages();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var db = services.GetRequiredService<ApplicationDbContext>();
+        db.Database.EnsureCreated();
+        await SeedData.EnsureSeededAsync(services);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Database creation or seeding failed.");
     }
 }
+
+app.Run();

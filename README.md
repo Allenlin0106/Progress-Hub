@@ -2,13 +2,13 @@
 
 A lightweight project management tool inspired by [OpenProject](https://www.openproject.org/). Manage projects, track work packages, and drag tasks across a Kanban board.
 
-Built as an **ASP.NET Core 2.1 Razor Pages** application that opens cleanly in **Visual Studio 2017** (15.9.x).
+Built as an **ASP.NET Core 10 (LTS) Razor Pages** application that opens cleanly in **Visual Studio 2022 (17.14+)**.
 
 ## Stack
 
-- **Web**: ASP.NET Core 2.1 + Razor Pages
-- **Auth**: ASP.NET Core Identity 2.1 (cookie-based)
-- **Data**: Entity Framework Core 2.1 + **SQLite** (file-based, zero-install)
+- **Web**: ASP.NET Core 10 + Razor Pages (Minimal Hosting)
+- **Auth**: ASP.NET Core Identity 10 (cookie-based)
+- **Data**: Entity Framework Core 10 + **SQLite** (file-based, zero-install)
 - **Client**: hand-rolled CSS + [SortableJS](https://github.com/SortableJS/Sortable) + [Frappe Gantt](https://frappe.io/gantt) (CDN)
 
 ## Features
@@ -23,14 +23,14 @@ Built as an **ASP.NET Core 2.1 Razor Pages** application that opens cleanly in *
 
 ## Prerequisites
 
-- Visual Studio 2017 (15.9.x) with the **ASP.NET and web development** workload
-- **.NET Core 2.1 SDK** ([download](https://dotnet.microsoft.com/download/dotnet/2.1))
+- Visual Studio 2022 **17.14** or newer with the **ASP.NET and web development** workload
+- **.NET 10 SDK** (10.0.7 or newer — [download](https://dotnet.microsoft.com/download/dotnet/10.0))
 
 That's it — no database server to install. SQLite runs in-process and the data lives in a single `progress-hub.db` file next to the app.
 
-## Running with Visual Studio 2017
+## Running with Visual Studio 2022
 
-1. Open `ProgressHub.sln` in Visual Studio 2017.
+1. Open `ProgressHub.sln` in Visual Studio 2022 (17.14+).
 2. Press **F5**. On first launch the app will:
    - create `progress-hub.db` in the project's content root (`EnsureCreated`)
    - seed the demo user and sample project
@@ -45,7 +45,7 @@ cd src/ProgressHub.Web
 dotnet run
 ```
 
-App listens on `https://localhost:5001` / `http://localhost:5000` by default.
+Listens on `https://localhost:5001` / `http://localhost:5000` by default.
 
 ### Choosing where the `.db` file lives
 
@@ -76,8 +76,7 @@ Progress-Hub/
         │   ├── css/site.css
         │   ├── js/kanban.js  # SortableJS wiring → POST /Projects/Board?handler=Move
         │   └── js/gantt.js   # Frappe Gantt initialisation + view-mode switcher
-        ├── Program.cs
-        ├── Startup.cs
+        ├── Program.cs        # Minimal Hosting (replaces Startup.cs)
         ├── appsettings.json
         └── ProgressHub.Web.csproj
 ```
@@ -100,3 +99,15 @@ del src\ProgressHub.Web\progress-hub.db*
 ```
 
 (or via File Explorer — remove `progress-hub.db`, plus `.db-shm` and `.db-wal` if present). Restart the app; it will rebuild the schema and re-seed demo data.
+
+## Upgrading from a previous .NET Core 2.1 build
+
+If you have an old `progress-hub.db` lying around from the .NET Core 2.1 version of this project, **delete it first**. The schema is unchanged, but starting fresh avoids any provider-version quirks. The app re-seeds demo data on next launch.
+
+## Notes on the .NET 10 upgrade
+
+- `Startup.cs` was merged into `Program.cs` using the Minimal Hosting model (`WebApplication.CreateBuilder`).
+- `UseMvc()` was replaced with endpoint routing (`UseRouting` + `UseAuthentication` + `UseAuthorization` + `MapRazorPages`).
+- The Kanban move endpoint accepts string-form `WorkPackageStatus` values; a global `JsonStringEnumConverter` is registered via `AddRazorPages().AddJsonOptions(...)`.
+- The Gantt page now serializes timeline data with `System.Text.Json` (`JavaScriptEncoder.UnsafeRelaxedJsonEscaping`) and HTML-escapes `</` before embedding into the inline `<script>` tag.
+- We still use `EnsureCreated()` for first-run schema creation; switch to `Database.Migrate()` after running `dotnet ef migrations add Initial` if you need real schema evolution.

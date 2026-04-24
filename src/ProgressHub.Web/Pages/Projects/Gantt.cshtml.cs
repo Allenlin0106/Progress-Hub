@@ -1,12 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using ProgressHub.Web.Data;
 using ProgressHub.Web.Models;
 
@@ -14,6 +14,12 @@ namespace ProgressHub.Web.Pages.Projects
 {
     public class GanttModel : PageModel
     {
+        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            PropertyNamingPolicy = null
+        };
+
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -55,10 +61,10 @@ namespace ProgressHub.Web.Pages.Projects
                 custom_class = "status-" + wp.Status
             }).ToList();
 
-            TasksJson = JsonConvert.SerializeObject(tasks, new JsonSerializerSettings
-            {
-                StringEscapeHandling = StringEscapeHandling.EscapeHtml
-            });
+            // System.Text.Json with UnsafeRelaxedJsonEscaping does NOT escape `</`, so manually
+            // close the inline-script-injection door before embedding into <script>...</script>.
+            var json = JsonSerializer.Serialize(tasks, JsonOptions);
+            TasksJson = json.Replace("</", "<\\/");
             return Page();
         }
 
