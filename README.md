@@ -8,7 +8,7 @@ Built as an **ASP.NET Core 2.1 Razor Pages** application that opens cleanly in *
 
 - **Web**: ASP.NET Core 2.1 + Razor Pages
 - **Auth**: ASP.NET Core Identity 2.1 (cookie-based)
-- **Data**: Entity Framework Core 2.1 + **SQL Server** (LocalDB by default)
+- **Data**: Entity Framework Core 2.1 + **SQLite** (file-based, zero-install)
 - **Client**: hand-rolled CSS + [SortableJS](https://github.com/SortableJS/Sortable) + [Frappe Gantt](https://frappe.io/gantt) (CDN)
 
 ## Features
@@ -25,22 +25,16 @@ Built as an **ASP.NET Core 2.1 Razor Pages** application that opens cleanly in *
 
 - Visual Studio 2017 (15.9.x) with the **ASP.NET and web development** workload
 - **.NET Core 2.1 SDK** ([download](https://dotnet.microsoft.com/download/dotnet/2.1))
-- **SQL Server LocalDB** (comes with the VS 2017 ASP.NET workload — nothing extra to install)
+
+That's it — no database server to install. SQLite runs in-process and the data lives in a single `progress-hub.db` file next to the app.
 
 ## Running with Visual Studio 2017
 
 1. Open `ProgressHub.sln` in Visual Studio 2017.
-2. (Optional) Confirm the connection string in `src/ProgressHub.Web/appsettings.json`:
-
-   ```
-   Server=(localdb)\mssqllocaldb;Database=ProgressHub;Trusted_Connection=True;MultipleActiveResultSets=true
-   ```
-
-3. Press **F5** to run. On first launch the app will:
-   - create the `ProgressHub` database in LocalDB (`EnsureCreated`)
+2. Press **F5**. On first launch the app will:
+   - create `progress-hub.db` in the project's content root (`EnsureCreated`)
    - seed the demo user and sample project
-
-4. Sign in with the demo account:
+3. Sign in with the demo account:
    - Email: `demo@example.com`
    - Password: `demo1234`
 
@@ -53,26 +47,21 @@ dotnet run
 
 App listens on `https://localhost:5001` / `http://localhost:5000` by default.
 
-### Using SQL Server in Docker instead of LocalDB
+### Choosing where the `.db` file lives
 
-If you are on macOS/Linux or prefer not to use LocalDB, start SQL Server via the provided compose file:
-
-```
-docker compose up -d
-```
-
-Then update the connection string in `appsettings.json`:
+`appsettings.json` sets:
 
 ```
-Server=localhost,1433;Database=ProgressHub;User Id=sa;Password=Progress!Hub1;TrustServerCertificate=True
+"DefaultConnection": "Data Source=progress-hub.db"
 ```
+
+The path is relative to the app's content root. Use an absolute path (e.g. `Data Source=C:\data\progress-hub.db`) if you want to keep the file outside the project folder.
 
 ## Project layout
 
 ```
 Progress-Hub/
 ├── ProgressHub.sln
-├── docker-compose.yml      # optional: SQL Server 2019 Express (for non-Windows)
 └── src/
     └── ProgressHub.Web/
         ├── Data/             # ApplicationDbContext, SeedData, ProjectAccess helpers
@@ -104,18 +93,10 @@ Progress-Hub/
 
 ## Reset the database
 
-**LocalDB:** delete the database via SQL Server Object Explorer in VS, or run:
+Stop the app and delete the SQLite files:
 
 ```
-sqllocaldb stop MSSQLLocalDB
-sqllocaldb delete MSSQLLocalDB
-sqllocaldb create MSSQLLocalDB
+del src\ProgressHub.Web\progress-hub.db*
 ```
 
-**Docker:**
-
-```
-docker compose down -v
-```
-
-Restart the app; it will rebuild the schema and re-seed demo data.
+(or via File Explorer — remove `progress-hub.db`, plus `.db-shm` and `.db-wal` if present). Restart the app; it will rebuild the schema and re-seed demo data.
