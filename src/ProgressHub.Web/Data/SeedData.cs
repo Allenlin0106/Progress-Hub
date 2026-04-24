@@ -19,6 +19,8 @@ namespace ProgressHub.Web.Data
 
             if (db.Projects.Any()) return;
 
+            var today = DateTime.UtcNow.Date;
+
             var project = new Project
             {
                 Name = "Website Revamp",
@@ -32,14 +34,18 @@ namespace ProgressHub.Web.Data
                 Title = "Gather design references",
                 Status = WorkPackageStatus.New,
                 Priority = WorkPackagePriority.Normal,
-                Position = 0
+                Position = 0,
+                StartDate = today,
+                DueDate = today.AddDays(3)
             });
             project.WorkPackages.Add(new WorkPackage
             {
                 Title = "Write content brief",
                 Status = WorkPackageStatus.New,
                 Priority = WorkPackagePriority.Low,
-                Position = 1
+                Position = 1,
+                StartDate = today.AddDays(2),
+                DueDate = today.AddDays(5)
             });
             project.WorkPackages.Add(new WorkPackage
             {
@@ -47,7 +53,9 @@ namespace ProgressHub.Web.Data
                 Status = WorkPackageStatus.InProgress,
                 Priority = WorkPackagePriority.High,
                 Position = 0,
-                AssigneeId = alice.Id
+                AssigneeId = alice.Id,
+                StartDate = today.AddDays(4),
+                DueDate = today.AddDays(10)
             });
             project.WorkPackages.Add(new WorkPackage
             {
@@ -55,14 +63,18 @@ namespace ProgressHub.Web.Data
                 Status = WorkPackageStatus.InProgress,
                 Priority = WorkPackagePriority.Normal,
                 Position = 1,
-                AssigneeId = demo.Id
+                AssigneeId = demo.Id,
+                StartDate = today.AddDays(6),
+                DueDate = today.AddDays(9)
             });
             project.WorkPackages.Add(new WorkPackage
             {
                 Title = "Archive legacy assets",
                 Status = WorkPackageStatus.Done,
                 Priority = WorkPackagePriority.Low,
-                Position = 0
+                Position = 0,
+                StartDate = today.AddDays(-5),
+                DueDate = today.AddDays(-2)
             });
 
             db.Projects.Add(project);

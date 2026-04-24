@@ -283,3 +283,10 @@ label {
 .badge.Owner { background: #fff4e6; color: var(--warn); }
 
 .empty { color: var(--muted); padding: 24px; text-align: center; }
+
+#gantt { width: 100%; height: auto; }
+#gantt .bar-wrapper.status-New .bar { fill: #6b7280; }
+#gantt .bar-wrapper.status-InProgress .bar { fill: var(--primary); }
+#gantt .bar-wrapper.status-Done .bar { fill: var(--success); }
+#gantt .bar-wrapper .bar-progress { fill: rgba(255, 255, 255, 0.35); }
+.gantt-viewmodes .btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }

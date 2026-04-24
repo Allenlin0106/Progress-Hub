@@ -45,6 +45,9 @@ namespace ProgressHub.Web.Pages.Projects.WorkPackages
             public string AssigneeId { get; set; }
 
             [DataType(DataType.Date)]
+            public DateTime? StartDate { get; set; }
+
+            [DataType(DataType.Date)]
             public DateTime? DueDate { get; set; }
         }
 
@@ -81,6 +84,7 @@ namespace ProgressHub.Web.Pages.Projects.WorkPackages
                 Status = wp.Status,
                 Priority = wp.Priority,
                 AssigneeId = wp.AssigneeId,
+                StartDate = wp.StartDate,
                 DueDate = wp.DueDate
             };
             return Page();
@@ -103,6 +107,7 @@ namespace ProgressHub.Web.Pages.Projects.WorkPackages
             wp.Description = Input.Description;
             wp.Priority = Input.Priority;
             wp.AssigneeId = string.IsNullOrEmpty(Input.AssigneeId) ? null : Input.AssigneeId;
+            wp.StartDate = Input.StartDate;
             wp.DueDate = Input.DueDate;
             wp.UpdatedAt = DateTime.UtcNow;
 

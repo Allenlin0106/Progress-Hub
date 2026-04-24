@@ -40,7 +40,11 @@
             </select>
         </div>
         <div style="flex:1">
-            <label asp-for="Input.DueDate"></label>
+            <label asp-for="Input.StartDate">Start date</label>
+            <input asp-for="Input.StartDate" type="date" />
+        </div>
+        <div style="flex:1">
+            <label asp-for="Input.DueDate">Due date</label>
             <input asp-for="Input.DueDate" type="date" />
         </div>
     </div>

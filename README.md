@@ -16,8 +16,9 @@ Built as an **ASP.NET Core 2.1 Razor Pages** application that opens cleanly in *
 - Register / sign in / sign out
 - Create, edit, delete projects
 - Invite members by email, assign tasks to them
-- Work packages with title, description, status, priority, assignee, due date
+- Work packages with title, description, status, priority, assignee, start date, due date
 - Kanban board (New / In Progress / Done) with drag-and-drop persistence
+- Gantt timeline view (Frappe Gantt) with Day / Week / Month view modes
 - Owner-only actions for project edit/delete and member management
 
 ## Prerequisites
@@ -78,13 +79,14 @@ Progress-Hub/
         ├── Models/           # ApplicationUser, Project, ProjectMember, WorkPackage, enums
         ├── Pages/
         │   ├── Account/      # Login, Register, Logout
-        │   ├── Projects/     # Index, Create, Edit, Delete, Board (Kanban), Members
+        │   ├── Projects/     # Index, Create, Edit, Delete, Board (Kanban), Gantt, Members
         │   │   └── WorkPackages/   # Create, Edit (delete via handler)
         │   ├── Shared/       # _Layout, _ValidationScriptsPartial
         │   └── Index.cshtml  # Landing
         ├── wwwroot/
         │   ├── css/site.css
-        │   └── js/kanban.js  # SortableJS wiring → POST /Projects/Board?handler=Move
+        │   ├── js/kanban.js  # SortableJS wiring → POST /Projects/Board?handler=Move
+        │   └── js/gantt.js   # Frappe Gantt initialisation + view-mode switcher
         ├── Program.cs
         ├── Startup.cs
         ├── appsettings.json

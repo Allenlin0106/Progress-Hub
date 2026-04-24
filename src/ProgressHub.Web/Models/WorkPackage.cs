@@ -23,6 +23,7 @@ namespace ProgressHub.Web.Models
         public string AssigneeId { get; set; }
         public ApplicationUser Assignee { get; set; }
 
+        public DateTime? StartDate { get; set; }
         public DateTime? DueDate { get; set; }
         public int Position { get; set; }
 
