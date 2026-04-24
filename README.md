@@ -2,13 +2,13 @@
 
 A lightweight project management tool inspired by [OpenProject](https://www.openproject.org/). Manage projects, track work packages, and drag tasks across a Kanban board.
 
-Built as an **ASP.NET Core 2.2 Razor Pages** application so it opens cleanly in **Visual Studio 2017** (the last VS version to officially support .NET Core 2.2).
+Built as an **ASP.NET Core 2.1 Razor Pages** application that opens cleanly in **Visual Studio 2017** (15.9.x).
 
 ## Stack
 
-- **Web**: ASP.NET Core 2.2 + Razor Pages
-- **Auth**: ASP.NET Core Identity (cookie-based)
-- **Data**: Entity Framework Core 2.2 + **SQL Server** (LocalDB by default)
+- **Web**: ASP.NET Core 2.1 + Razor Pages
+- **Auth**: ASP.NET Core Identity 2.1 (cookie-based)
+- **Data**: Entity Framework Core 2.1 + **SQL Server** (LocalDB by default)
 - **Client**: hand-rolled CSS + [SortableJS](https://github.com/SortableJS/Sortable) (CDN) for Kanban drag-and-drop
 
 ## Features
@@ -23,7 +23,7 @@ Built as an **ASP.NET Core 2.2 Razor Pages** application so it opens cleanly in 
 ## Prerequisites
 
 - Visual Studio 2017 (15.9.x) with the **ASP.NET and web development** workload
-- **.NET Core 2.2 SDK** ([download](https://dotnet.microsoft.com/download/dotnet/2.2))
+- **.NET Core 2.1 SDK** ([download](https://dotnet.microsoft.com/download/dotnet/2.1))
 - **SQL Server LocalDB** (comes with the VS 2017 ASP.NET workload — nothing extra to install)
 
 ## Running with Visual Studio 2017
