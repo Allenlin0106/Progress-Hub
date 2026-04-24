@@ -7,9 +7,14 @@
 <div class="auth-page">
     <form method="post" class="card auth-card">
         <h1>Sign in</h1>
+        @if (Model.IsLdapEnabled)
+        {
+            <p class="muted">Use your organisation's directory credentials.</p>
+        }
         <div asp-validation-summary="All" class="error"></div>
-        <label asp-for="Input.Email"></label>
-        <input asp-for="Input.Email" autocomplete="email" />
+
+        <label asp-for="Input.Email">@(Model.IsLdapEnabled ? "Username or email" : "Email")</label>
+        <input asp-for="Input.Email" autocomplete="username" />
         <span asp-validation-for="Input.Email" class="error"></span>
 
         <label asp-for="Input.Password"></label>
@@ -22,7 +27,10 @@
         </label>
 
         <button type="submit" class="btn btn-primary full">Sign in</button>
-        <p class="muted center">No account? <a asp-page="/Account/Register">Create one</a></p>
+        @if (!Model.IsLdapEnabled)
+        {
+            <p class="muted center">No account? <a asp-page="/Account/Register">Create one</a></p>
+        }
     </form>
 </div>
 
