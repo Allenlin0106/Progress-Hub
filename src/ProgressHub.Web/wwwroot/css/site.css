@@ -284,9 +284,25 @@ label {
 
 .empty { color: var(--muted); padding: 24px; text-align: center; }
 
-#gantt { width: 100%; height: auto; }
+.gantt-frame {
+    resize: both;
+    overflow: auto;
+    width: 100%;
+    height: 480px;
+    min-width: 320px;
+    min-height: 200px;
+    max-width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    padding: 4px;
+}
+
+#gantt { display: block; height: auto; }
 #gantt .bar-wrapper.status-New .bar { fill: #6b7280; }
 #gantt .bar-wrapper.status-InProgress .bar { fill: var(--primary); }
 #gantt .bar-wrapper.status-Done .bar { fill: var(--success); }
 #gantt .bar-wrapper .bar-progress { fill: rgba(255, 255, 255, 0.35); }
+.gantt-viewmodes { align-items: center; }
 .gantt-viewmodes .btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+#gantt-size { font-variant-numeric: tabular-nums; font-size: 12px; }

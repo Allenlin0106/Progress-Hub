@@ -38,8 +38,13 @@
             <button type="button" class="btn" data-viewmode="Day">Day</button>
             <button type="button" class="btn" data-viewmode="Week">Week</button>
             <button type="button" class="btn" data-viewmode="Month">Month</button>
+            <span style="flex:1"></span>
+            <span class="muted" id="gantt-size" title="Drag the bottom-right corner to resize"></span>
+            <button type="button" class="btn" id="gantt-reset-size" title="Reset to default size">Reset size</button>
         </div>
-        <svg id="gantt"></svg>
+        <div class="gantt-frame" data-project-id="@Model.Project.Id">
+            <svg id="gantt"></svg>
+        </div>
     }
 </div>
 
