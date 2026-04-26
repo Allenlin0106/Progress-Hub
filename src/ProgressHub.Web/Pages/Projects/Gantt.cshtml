@@ -42,8 +42,11 @@
             <span class="muted" id="gantt-size" title="Drag the bottom-right corner to resize"></span>
             <button type="button" class="btn" id="gantt-reset-size" title="Reset to default size">Reset size</button>
         </div>
-        <div class="gantt-frame" data-project-id="@Model.Project.Id">
-            <svg id="gantt"></svg>
+        <div class="gantt-wrap" data-project-id="@Model.Project.Id">
+            <div class="gantt-frame">
+                <svg id="gantt"></svg>
+            </div>
+            <div class="gantt-resize-handle" title="Drag to resize"></div>
         </div>
     }
 </div>

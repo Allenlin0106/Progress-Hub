@@ -42,66 +42,110 @@
         })(buttons[i]));
     }
 
-    // ----- Resizable frame: persist size per project in localStorage -----
-    var frame = document.querySelector('.gantt-frame');
+    // ----- Resizable wrap: custom handle + persist per project -----
+    var wrap = document.querySelector('.gantt-wrap');
+    var handle = document.querySelector('.gantt-resize-handle');
     var sizeOut = document.getElementById('gantt-size');
     var resetBtn = document.getElementById('gantt-reset-size');
-    if (!frame) return;
+    if (!wrap || !handle) return;
 
-    var projectId = frame.getAttribute('data-project-id') || 'default';
+    var projectId = wrap.getAttribute('data-project-id') || 'default';
     var storageKey = 'progress-hub.gantt-size.' + projectId;
     var defaultHeight = 480;
+    var minWidth = 320;
+    var minHeight = 200;
 
     function applySize(size) {
         if (!size) return;
-        if (size.width) frame.style.width = size.width + 'px';
-        if (size.height) frame.style.height = size.height + 'px';
+        if (size.width) wrap.style.width = size.width + 'px';
+        if (size.height) wrap.style.height = size.height + 'px';
     }
 
     function readSavedSize() {
         try {
             var raw = localStorage.getItem(storageKey);
             return raw ? JSON.parse(raw) : null;
-        } catch (e) {
-            return null;
-        }
+        } catch (e) { return null; }
     }
 
     function saveSize() {
         try {
             localStorage.setItem(storageKey, JSON.stringify({
-                width: frame.clientWidth,
-                height: frame.clientHeight
+                width: wrap.clientWidth,
+                height: wrap.clientHeight
             }));
         } catch (e) { /* quota / private mode — ignore */ }
     }
 
     function showSize() {
         if (!sizeOut) return;
-        sizeOut.textContent = frame.clientWidth + ' × ' + frame.clientHeight + ' px';
+        sizeOut.textContent = wrap.clientWidth + ' × ' + wrap.clientHeight + ' px';
     }
 
     applySize(readSavedSize());
     showSize();
 
-    if (typeof ResizeObserver !== 'undefined') {
-        var ro = new ResizeObserver(function () {
-            showSize();
-            saveSize();
-        });
-        ro.observe(frame);
-    } else {
-        // Fallback: poll on mouseup (older browsers)
-        document.addEventListener('mouseup', function () {
-            showSize();
-            saveSize();
-        });
-    }
+    var drag = null;
+
+    handle.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        drag = {
+            startX: e.clientX,
+            startY: e.clientY,
+            startW: wrap.clientWidth,
+            startH: wrap.clientHeight
+        };
+        document.body.classList.add('gantt-resizing');
+    });
+
+    document.addEventListener('mousemove', function (e) {
+        if (!drag) return;
+        var w = Math.max(minWidth, drag.startW + (e.clientX - drag.startX));
+        var h = Math.max(minHeight, drag.startH + (e.clientY - drag.startY));
+        wrap.style.width = w + 'px';
+        wrap.style.height = h + 'px';
+        showSize();
+    });
+
+    document.addEventListener('mouseup', function () {
+        if (!drag) return;
+        drag = null;
+        document.body.classList.remove('gantt-resizing');
+        saveSize();
+    });
+
+    // Touch support (mobile / pen)
+    handle.addEventListener('touchstart', function (e) {
+        if (!e.touches.length) return;
+        var t = e.touches[0];
+        drag = {
+            startX: t.clientX,
+            startY: t.clientY,
+            startW: wrap.clientWidth,
+            startH: wrap.clientHeight
+        };
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function (e) {
+        if (!drag || !e.touches.length) return;
+        var t = e.touches[0];
+        var w = Math.max(minWidth, drag.startW + (t.clientX - drag.startX));
+        var h = Math.max(minHeight, drag.startH + (t.clientY - drag.startY));
+        wrap.style.width = w + 'px';
+        wrap.style.height = h + 'px';
+        showSize();
+    }, { passive: true });
+
+    document.addEventListener('touchend', function () {
+        if (!drag) return;
+        drag = null;
+        saveSize();
+    });
 
     if (resetBtn) {
         resetBtn.addEventListener('click', function () {
-            frame.style.width = '';
-            frame.style.height = defaultHeight + 'px';
+            wrap.style.width = '';
+            wrap.style.height = defaultHeight + 'px';
             try { localStorage.removeItem(storageKey); } catch (e) { /* ignore */ }
             showSize();
         });
