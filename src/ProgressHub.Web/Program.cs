@@ -64,17 +64,40 @@ app.MapRazorPages();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
     try
     {
         var db = services.GetRequiredService<ApplicationDbContext>();
         db.Database.EnsureCreated();
+
+        // EnsureCreated is a no-op when the .db file already exists, so a stale
+        // file from an older build of the project (or a half-built one) leaves
+        // Identity / Project tables missing. Detect that and rebuild from
+        // scratch so first-time-after-upgrade just works.
+        if (!await SchemaIsHealthyAsync(db))
+        {
+            logger.LogWarning("Stale or incomplete progress-hub.db detected; rebuilding schema from the model.");
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
+        }
+
         await SeedData.EnsureSeededAsync(services);
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "Database creation or seeding failed.");
     }
 }
 
 app.Run();
+
+static async Task<bool> SchemaIsHealthyAsync(ApplicationDbContext db)
+{
+    var conn = db.Database.GetDbConnection();
+    if (conn.State != System.Data.ConnectionState.Open) await conn.OpenAsync();
+    using var cmd = conn.CreateCommand();
+    cmd.CommandText =
+        "SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN ('AspNetUsers','Projects','WorkPackages','ProjectMembers')";
+    var count = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+    return count == 4;
+}

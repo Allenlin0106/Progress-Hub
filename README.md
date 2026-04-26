@@ -102,7 +102,13 @@ del src\ProgressHub.Web\progress-hub.db*
 
 ## Upgrading from a previous .NET Core 2.1 build
 
-If you have an old `progress-hub.db` lying around from the .NET Core 2.1 version of this project, **delete it first**. The schema is unchanged, but starting fresh avoids any provider-version quirks. The app re-seeds demo data on next launch.
+If you have an old `progress-hub.db` from the .NET Core 2.1 version of this project, the app will automatically detect it on first launch (Identity / Projects tables missing or incomplete) and rebuild the schema from scratch — you'll see a warning in the log:
+
+```
+Stale or incomplete progress-hub.db detected; rebuilding schema from the model.
+```
+
+If you'd rather wipe it manually, just delete `src\ProgressHub.Web\progress-hub.db*` before pressing F5.
 
 ## Notes on the .NET 10 upgrade
 
@@ -110,4 +116,4 @@ If you have an old `progress-hub.db` lying around from the .NET Core 2.1 version
 - `UseMvc()` was replaced with endpoint routing (`UseRouting` + `UseAuthentication` + `UseAuthorization` + `MapRazorPages`).
 - The Kanban move endpoint accepts string-form `WorkPackageStatus` values; a global `JsonStringEnumConverter` is registered via `AddRazorPages().AddJsonOptions(...)`.
 - The Gantt page now serializes timeline data with `System.Text.Json` (`JavaScriptEncoder.UnsafeRelaxedJsonEscaping`) and HTML-escapes `</` before embedding into the inline `<script>` tag.
-- We still use `EnsureCreated()` for first-run schema creation; switch to `Database.Migrate()` after running `dotnet ef migrations add Initial` if you need real schema evolution.
+- Schema is provisioned with `EnsureCreated()` plus a self-heal that drops and recreates the database when the four expected tables (`AspNetUsers`, `Projects`, `ProjectMembers`, `WorkPackages`) aren't all present. Switch to `Database.Migrate()` after running `dotnet ef migrations add Initial` if you need real schema evolution.
