@@ -295,12 +295,20 @@ label {
 .gantt-frame {
     width: 100%;
     height: 100%;
-    overflow: auto;
+    overflow: hidden;
     border: 1px solid var(--border);
     border-radius: 8px;
     background: #fff;
-    padding: 4px;
     box-sizing: border-box;
+}
+
+/* Frappe Gantt wraps our <svg> in <div class="gantt-container"> at runtime.
+   Force it to fill .gantt-frame so it (not the frame) is the one scroller. */
+.gantt-frame > .gantt-container {
+    width: 100% !important;
+    height: 100% !important;
+    overflow: auto !important;
+    box-sizing: border-box !important;
 }
 
 .gantt-resize-handle {
