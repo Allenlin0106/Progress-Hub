@@ -1,0 +1,65 @@
+@page "{id:int}"
+@model ProgressHub.Web.Pages.Projects.GanttModel
+@{
+    ViewData["Title"] = Model.Project.Name + " · Gantt";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.css" />
+
+<div class="toolbar">
+    <div>
+        <h2 style="margin-bottom:4px">@Model.Project.Name</h2>
+        <div class="muted">Gantt timeline</div>
+    </div>
+    <div class="button-row">
+        <a class="btn" asp-page="./WorkPackages/Create" asp-route-projectId="@Model.Project.Id">New work package</a>
+        @if (Model.IsOwner)
+        {
+            <a class="btn" asp-page="./Edit" asp-route-id="@Model.Project.Id">Edit project</a>
+        }
+    </div>
+</div>
+
+<div class="tabs">
+    <a asp-page="./Board" asp-route-id="@Model.Project.Id">Kanban</a>
+    <a class="active">Gantt</a>
+    <a asp-page="./Members" asp-route-id="@Model.Project.Id">Members</a>
+</div>
+
+<div class="card">
+    @if (string.IsNullOrEmpty(Model.TasksJson) || Model.TasksJson == "[]")
+    {
+        <div class="empty">No work packages with start &amp; due dates yet. Edit a work package and fill in both dates to make it appear on the timeline.</div>
+    }
+    else
+    {
+        <div class="gantt-viewmodes button-row" style="margin-bottom:12px">
+            <span class="muted" style="margin-right:8px">View:</span>
+            <button type="button" class="btn" data-viewmode="Day">Day</button>
+            <button type="button" class="btn" data-viewmode="Week">Week</button>
+            <button type="button" class="btn" data-viewmode="Month">Month</button>
+            <span style="flex:1"></span>
+            <span class="muted" id="gantt-size" title="Drag the bottom-right corner to resize"></span>
+            <button type="button" class="btn" id="gantt-reset-size" title="Reset to default size">Reset size</button>
+        </div>
+        <div class="gantt-wrap" data-project-id="@Model.Project.Id">
+            <div class="gantt-frame">
+                <svg id="gantt"></svg>
+            </div>
+            <div class="gantt-resize-handle" title="Drag to resize"></div>
+        </div>
+    }
+</div>
+
+@if (!string.IsNullOrEmpty(Model.TasksJson) && Model.TasksJson != "[]")
+{
+    <script id="gantt-data" type="application/json">@Html.Raw(Model.TasksJson)</script>
+}
+
+@section Scripts {
+    @if (!string.IsNullOrEmpty(Model.TasksJson) && Model.TasksJson != "[]")
+    {
+        <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
+        <script src="~/js/gantt.js"></script>
+    }
+}

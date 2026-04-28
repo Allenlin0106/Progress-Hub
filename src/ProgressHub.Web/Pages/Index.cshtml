@@ -1,0 +1,22 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<section class="hero card">
+    <h1>Progress-Hub</h1>
+    <p>A lightweight project management tool inspired by OpenProject — manage projects, track work packages, and drag tasks across a Kanban board.</p>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <a class="btn btn-primary" asp-page="/Projects/Index">Go to your projects</a>
+    }
+    else
+    {
+        <div class="button-row">
+            <a class="btn btn-primary" asp-page="/Account/Login">Sign in</a>
+            <a class="btn" asp-page="/Account/Register">Register</a>
+        </div>
+        <p class="muted">Demo account: <strong>demo@@example.com</strong> / <strong>demo1234</strong></p>
+    }
+</section>

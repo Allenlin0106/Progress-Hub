@@ -1,0 +1,60 @@
+@page
+@model ProgressHub.Web.Pages.Projects.WorkPackages.CreateModel
+@{
+    ViewData["Title"] = "New work package";
+}
+
+<h2>New work package · @Model.Project.Name</h2>
+
+<form method="post" class="card" style="max-width:600px">
+    <div asp-validation-summary="All" class="error"></div>
+    <input type="hidden" name="projectId" value="@Model.Project.Id" />
+
+    <label asp-for="Input.Title"></label>
+    <input asp-for="Input.Title" />
+    <span asp-validation-for="Input.Title" class="error"></span>
+
+    <label asp-for="Input.Description"></label>
+    <textarea asp-for="Input.Description" rows="3"></textarea>
+
+    <div class="row">
+        <div style="flex:1">
+            <label asp-for="Input.Status"></label>
+            <select asp-for="Input.Status" asp-items="Html.GetEnumSelectList<WorkPackageStatus>()"></select>
+        </div>
+        <div style="flex:1">
+            <label asp-for="Input.Priority"></label>
+            <select asp-for="Input.Priority" asp-items="Html.GetEnumSelectList<WorkPackagePriority>()"></select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div style="flex:1">
+            <label asp-for="Input.AssigneeId">Assignee</label>
+            <select asp-for="Input.AssigneeId">
+                <option value="">Unassigned</option>
+                @foreach (var m in Model.Members)
+                {
+                    <option value="@m.UserId">@m.User.DisplayName (@m.User.Email)</option>
+                }
+            </select>
+        </div>
+        <div style="flex:1">
+            <label asp-for="Input.StartDate">Start date</label>
+            <input asp-for="Input.StartDate" type="date" />
+        </div>
+        <div style="flex:1">
+            <label asp-for="Input.DueDate">Due date</label>
+            <input asp-for="Input.DueDate" type="date" />
+        </div>
+    </div>
+
+    <div class="button-row" style="margin-top:16px">
+        <a class="btn" asp-page="/Projects/Board" asp-route-id="@Model.Project.Id">Cancel</a>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

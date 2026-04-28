@@ -1,0 +1,28 @@
+@page
+@model ProgressHub.Web.Pages.Projects.IndexModel
+@{
+    ViewData["Title"] = "Projects";
+}
+
+<div class="toolbar">
+    <h2>Projects</h2>
+    <a class="btn btn-primary" asp-page="./Create">New project</a>
+</div>
+
+@if (!Model.Projects.Any())
+{
+    <div class="card empty">No projects yet. Create your first one.</div>
+}
+else
+{
+    <div class="project-grid">
+        @foreach (var p in Model.Projects)
+        {
+            <a class="card project-card" asp-page="./Board" asp-route-id="@p.Project.Id">
+                <h3>@p.Project.Name</h3>
+                <div class="muted">@(string.IsNullOrEmpty(p.Project.Description) ? "No description" : p.Project.Description)</div>
+                <div class="muted" style="margin-top:auto">@p.WorkPackageCount tasks · @p.MemberCount members</div>
+            </a>
+        }
+    </div>
+}
